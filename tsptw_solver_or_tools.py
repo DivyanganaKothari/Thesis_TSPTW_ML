@@ -57,7 +57,7 @@ def print_solution(data, manager, routing, solution, coordinates, instance_dir):
 
     # Create a DataFrame from the routes
     routes_df = pd.DataFrame(routes)
-    solution_path = os.path.join('Data/Testing_data_2', instance_dir, f'solution_{cluster_id}.csv')
+    solution_path = os.path.join('Data/Training_data_2', instance_dir, f'solution_{cluster_id}.csv')
     # Save the DataFrame to a CSV file
     routes_df.to_csv(solution_path, index=False)
 
@@ -71,14 +71,14 @@ def print_solution(data, manager, routing, solution, coordinates, instance_dir):
                       popup=f"Address ID: {node['node']}, Time Window: ({node['time_min']}, {node['time_max']})").add_to(
             m)
     # Save it as html
-    route_map_path = os.path.join('Data/Testing_data_2', instance_dir, f'route_map_{cluster_id}.html')
+    route_map_path = os.path.join('Data/Training_data_2', instance_dir, f'route_map_{cluster_id}.html')
     m.save(route_map_path)
 
 
 def main():
     """Solve the VRP with time windows."""
     # Get the list of instance directories
-    instance_dirs = os.listdir('Data/Testing_data_2')
+    instance_dirs = os.listdir('Data/Training_data_2')
 
     # Loop over each instance directory
     for instance_dir in instance_dirs:
@@ -86,9 +86,9 @@ def main():
         cluster_id = instance_dir.split('_')[-1]
 
         # Load the data and distance matrix from the CSV files
-        data_path = os.path.join('Data/Testing_data_2', instance_dir,
+        data_path = os.path.join('Data/Training_data_2', instance_dir,
                                  f'data_{cluster_id}.csv')
-        distance_matrix_path = os.path.join('Data/Testing_data_2', instance_dir,
+        distance_matrix_path = os.path.join('Data/Training_data_2', instance_dir,
                                             f'distance_matrix_{cluster_id}.csv')
         data = pd.read_csv(data_path)
         distance_matrix = pd.read_csv(distance_matrix_path)
@@ -187,7 +187,7 @@ def main():
         else:
             # If no solution was found, save a message to the solutions folder
             cluster_id = instance_dir.split('_')[-1]
-            solution_path = os.path.join('Data/Testing_data_2', instance_dir,
+            solution_path = os.path.join('Data/Training_data_2', instance_dir,
                                          f'solution_{cluster_id}.txt')
             with open(solution_path, 'w') as f:
                 f.write('Unable to find a solution within the time limit.')
