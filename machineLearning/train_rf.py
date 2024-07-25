@@ -5,15 +5,13 @@ import numpy as np
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.ensemble import RandomForestRegressor
 from scipy.stats import randint
-from models_evaluate_plot import evaluate_model#, plot_results
+from models_evaluate_plot import evaluate_model
 
+def train_rf(X_train, y_train, X_valid, y_valid, X_test, feature_set_name):
 
-
-#def train_rf(X_train, y_train, X_valid, y_valid, feature_set_name, model_dir):
-def train_rf(X_train, y_train, X_valid, y_valid, feature_set_name):
     param_distributions = {
         'n_estimators': randint(100, 500),
-        'max_features': ['auto', 'sqrt', 'log2', None],
+        'max_features': ['sqrt', 'log2', None],
         'max_depth': [None, 10, 20, 30, 40, 50],
         'min_samples_split': randint(2, 20),
         'min_samples_leaf': randint(1, 10)
@@ -25,12 +23,11 @@ def train_rf(X_train, y_train, X_valid, y_valid, feature_set_name):
     random_search.fit(X_train, y_train)
 
     best_model = random_search.best_estimator_
-    """
-     #save model
-    model_path = os.path.join(model_dir, f"best_rf_model_{feature_set_name}.joblib")
-    joblib.dump(best_model, model_path)
-    print(f"Random Forest model saved to {model_path}")
-    """
 
     y_valid_pred = best_model.predict(X_valid)
-    return best_model, evaluate_model(y_valid, y_valid_pred, feature_set_name, "Random Forest")
+    y_test_pred = best_model.predict(X_test)
+
+    valid_metrics = evaluate_model(y_valid, y_valid_pred, feature_set_name, "Random Forest")
+    test_predictions = {"Predicted": y_test_pred.tolist()}
+
+    return best_model, valid_metrics, test_predictions

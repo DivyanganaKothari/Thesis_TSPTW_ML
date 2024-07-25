@@ -6,7 +6,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from scipy.stats import randint
 from models_evaluate_plot import evaluate_model
 
-def train_gbm(X_train, y_train, X_valid, y_valid, feature_set_name):
+def train_gbm(X_train, y_train, X_valid, y_valid, X_test, feature_set_name):
     param_distributions = {
         'n_estimators': randint(100, 500),
         'learning_rate': [0.01, 0.05, 0.1, 0.2],
@@ -31,4 +31,8 @@ def train_gbm(X_train, y_train, X_valid, y_valid, feature_set_name):
     """
 
     y_valid_pred = best_model.predict(X_valid)
-    return best_model, evaluate_model(y_valid, y_valid_pred, feature_set_name, "GBM")
+    valid_metrics = evaluate_model(y_valid, y_valid_pred, feature_set_name, "Gradient Boosting Machine")
+
+    y_test_pred = best_model.predict(X_test)
+    test_predictions = {"Predicted": y_test_pred.tolist()}  # Store test predictions
+    return best_model, valid_metrics, test_predictions

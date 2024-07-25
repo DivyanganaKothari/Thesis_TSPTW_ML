@@ -98,6 +98,7 @@ def load_data():
     train_data.replace(-1, pd.NA, inplace=True)
     test_data.replace(-1, pd.NA, inplace=True)
 
+    # Fill NaN values with the median of each column
     train_data.fillna(train_data.median(), inplace=True)
     test_data.fillna(test_data.median(), inplace=True)
 

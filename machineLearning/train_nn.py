@@ -22,17 +22,22 @@ class NeuralNetwork(nn.Module):
         x = self.fc4(x)
         return x
 
-def train_nn(X_train, y_train, X_valid, y_valid, feature_set_name):
+def train_nn(X_train, y_train, X_valid, y_valid,X_test, feature_set_name):
     # Normalize the data
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_valid = scaler.transform(X_valid)
+    X_test = scaler.transform(X_test)
+
 
     train_dataset = TensorDataset(torch.tensor(X_train, dtype=torch.float32), torch.tensor(y_train.values, dtype=torch.float32).view(-1, 1))
     valid_dataset = TensorDataset(torch.tensor(X_valid, dtype=torch.float32), torch.tensor(y_valid.values, dtype=torch.float32).view(-1, 1))
+    test_dataset = TensorDataset(torch.tensor(X_test, dtype=torch.float32))
+
 
     train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
     valid_loader = DataLoader(valid_dataset, batch_size=32, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
     input_dim = X_train.shape[1]
     model = NeuralNetwork(input_dim)
@@ -81,4 +86,9 @@ def train_nn(X_train, y_train, X_valid, y_valid, feature_set_name):
     model.eval()
     with torch.no_grad():
         y_valid_pred = model(torch.tensor(X_valid, dtype=torch.float32)).numpy().flatten()
-    return model, evaluate_model(y_valid.values, y_valid_pred, feature_set_name, "Neural Network")
+        y_test_pred = model(torch.tensor(X_test, dtype=torch.float32)).numpy().flatten()
+
+    valid_metrics = evaluate_model(y_valid.values, y_valid_pred, feature_set_name, "Neural Network")
+    test_predictions = {"Predicted": y_test_pred.tolist()}  # Store test predictions
+
+    return model, valid_metrics, test_predictions

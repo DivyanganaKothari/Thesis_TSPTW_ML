@@ -9,8 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 
 #def train_svr(X_train, y_train, X_valid, y_valid, feature_set_name,model_dir):
-"""
-def train_svr(X_train, y_train, X_valid, y_valid, feature_set_name):
+def train_svr(X_train, y_train, X_valid, y_valid, X_test, feature_set_name):
     param_distributions = {
         'C': uniform(0.1, 10),
         'epsilon': uniform(0.1, 1)
@@ -23,20 +22,18 @@ def train_svr(X_train, y_train, X_valid, y_valid, feature_set_name):
 
     best_model = random_search.best_estimator_
     y_valid_pred = best_model.predict(X_valid)
+    valid_metrics = evaluate_model(y_valid, y_valid_pred, feature_set_name, "SVR")
 
+    y_test_pred = best_model.predict(X_test)
+    test_predictions = {"Predicted": y_test_pred.tolist()}  # Store test predictions
+
+    return best_model, valid_metrics, test_predictions
+"""
      #save model
 
     model_path = os.path.join(model_dir, f"svr_model_{feature_set_name}.joblib")
     joblib.dump(svr, model_path)
     print(f"SVR model saved to {model_path}")
+    """
 
-    return best_model, evaluate_model(y_valid, y_valid_pred, feature_set_name, "SVR")
-"""
-def train_svr(X_train, y_train, X_valid, y_valid, feature_set_name):
-    # Use a pipeline to ensure proper scaling
-    svr_pipeline = make_pipeline(StandardScaler(), SVR(kernel='rbf', C=1.0, epsilon=0.1))
 
-    svr_pipeline.fit(X_train, y_train)
-    y_valid_pred = svr_pipeline.predict(X_valid)
-
-    return svr_pipeline, evaluate_model(y_valid, y_valid_pred, feature_set_name, "SVR")

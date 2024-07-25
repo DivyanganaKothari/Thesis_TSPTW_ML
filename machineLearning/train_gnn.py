@@ -24,7 +24,7 @@ class GNN(nn.Module):
         return x
 
 #def train_gnn(X_train, y_train, X_valid, y_valid, feature_set_name, model_dir):
-def train_gnn(X_train, y_train, X_valid, y_valid, feature_set_name):
+def train_gnn(X_train, y_train, X_valid, y_valid, X_test, feature_set_name):
     def create_edge_index(num_nodes):
         return torch.tensor([[i, j] for i in range(num_nodes) for j in range(num_nodes) if i != j], dtype=torch.long).t().contiguous()
 
@@ -36,10 +36,14 @@ def train_gnn(X_train, y_train, X_valid, y_valid, feature_set_name):
     y_valid = torch.tensor(y_valid.values, dtype=torch.float).view(-1, 1)
     edge_index_valid = create_edge_index(len(X_valid))
 
+    x_test = torch.tensor(X_test.values, dtype=torch.float)
+    edge_index_test = create_edge_index(len(X_test))
+
     input_dim = X_train.shape[1]
 
     train_data = Data(x=x_train, edge_index=edge_index_train, y=y_train)
     valid_data = Data(x=x_valid, edge_index=edge_index_valid, y=y_valid)
+    test_data = Data(x=x_test, edge_index=edge_index_test)
 
 
     model = GNN(input_dim)
@@ -90,4 +94,9 @@ def train_gnn(X_train, y_train, X_valid, y_valid, feature_set_name):
     model.eval()
     with torch.no_grad():
         y_valid_pred = model(valid_data).squeeze().numpy()
-    return model, evaluate_model(y_valid.numpy(), y_valid_pred, feature_set_name, "GNN")
+        y_test_pred = model(test_data).squeeze().numpy()
+
+    valid_metrics = evaluate_model(y_valid.numpy(), y_valid_pred, feature_set_name, "GNN")
+    test_predictions = {"Predicted": y_test_pred.tolist()}  # Store test predictions
+
+    return model, valid_metrics, test_predictions
